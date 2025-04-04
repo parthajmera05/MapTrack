@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Map, LogOut } from 'lucide-react';
+import { useState, useEffect } from "react";
+import LocationCard from "@/components/LocationCard";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Search, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function DashBoard() {
   const [locations, setLocations] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All Categories");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchLocations();
@@ -19,77 +26,94 @@ export function DashBoard() {
     } catch (error) {
       console.error('Error fetching locations:', error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleLogout = () => {
+  const filteredLocations = locations?.filter(location => {
+    const matchesSearch = location.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === "All Categories" || location.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleLogout = async () => {
     try {
-      fetch('http://localhost:5000/logout', {
+      await fetch('http://localhost:5000/logout', {
         method: 'POST',
         credentials: 'include',
-      }).then(() => {
-        navigate('/login');
       });
+      navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);   
     }
-    
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Map className="h-8 w-8 text-indigo-600" />
-              <h1 className="ml-2 text-xl font-bold text-gray-900">Location Dashboard</h1>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign out
-            </button>
-          </div>
-        </div>
+    <div className="flex flex-col min-h-screen max-w-6xl mx-auto">
+      
+      {/* Navbar */}
+      <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+        <h1 className="text-xl font-bold text-blue-600">MapTrack</h1>
+        <Button variant="ghost" onClick={handleLogout} className="flex items-center text-red-600">
+          <LogOut className="h-5 w-5 mr-2" /> Logout
+        </Button>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      
+      <div className="container mx-auto px-4 py-8 flex-grow">
+        
+       
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-800">Your Map Locations</h2>
+          <p className="text-gray-600">Select a location to view detailed map</p>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search locations..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {locations.map((location) => (
-              <div
-                key={location.id}
-                onClick={() => navigate(`/map/${location.id}`)}
-                className="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-200"
-              >
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Map className="h-6 w-6 text-indigo-600" />
-                    </div>
-                    <div className="ml-5">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900">
-                        {location.name}
-                      </h3>
-                      <div className="mt-2 text-sm text-gray-500">
-                        ID: {location.id}
-                      </div>
-                    </div>
+        </div>
+        
+        {/* Location Cards */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-6 w-2/3" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-4/5" />
+                  <div className="flex justify-between pt-2">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredLocations?.length ? (
+              filteredLocations.map((location) => (
+                <LocationCard key={location.id} location={location} />
+              ))
+            ) : (
+              <div className="col-span-3 py-8 text-center text-gray-500">
+                No locations found. Try adjusting your search or filter.
+              </div>
+            )}
+          </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

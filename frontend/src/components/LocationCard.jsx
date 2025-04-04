@@ -1,37 +1,23 @@
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ChevronRight } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 export default function LocationCard({ location }) {
-  const [, navigate] = useLocation();
-  
+  const navigate = useNavigate();
+
   const handleClick = () => {
-    navigate(`/map/${location.locationId}`);
+    navigate(`/map/${location.id}`);
   };
-  
-  const getLastUpdatedText = () => {
-    if (!location.lastUpdated) return "Recently updated";
-    
-    try {
-      const date = typeof location.lastUpdated === 'string' 
-        ? new Date(location.lastUpdated) 
-        : location.lastUpdated;
-        
-      return `Last updated: ${formatDistanceToNow(date, { addSuffix: true })}`;
-    } catch (error) {
-        console.error('Error parsing last updated date:', error);
-      return "Recently updated";
-    }
-  };
-  
+
   return (
     <Card 
       className="overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
       onClick={handleClick}
     >
-      <div className="h-48 bg-gray-200 relative overflow-hidden">
+      <div className="h-48 relative overflow-hidden">
         {location.imageUrl ? (
           <img 
             src={location.imageUrl} 
@@ -39,9 +25,17 @@ export default function LocationCard({ location }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200">
-            <MapPin className="h-12 w-12 text-gray-400" />
-          </div>
+          <MapContainer 
+            center={[location.latitude, location.longitude]} 
+            zoom={13} 
+            className="w-full h-full"
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Marker position={[location.latitude, location.longitude]}>
+              <Popup>{location.name}</Popup>
+            </Marker>
+          </MapContainer>
         )}
         <div className="absolute top-3 right-3">
           <Badge variant="secondary" className="bg-amber-500 text-white hover:bg-amber-600">
@@ -63,10 +57,7 @@ export default function LocationCard({ location }) {
           <MapPin className="mr-2 text-primary h-4 w-4" />
           <span>{location.latitude}° N, {location.longitude}° E</span>
         </div>
-        <div className="mt-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <span className="text-xs text-gray-500">{getLastUpdatedText()}</span>
-          </div>
+        <div className="mt-4 flex justify-end">
           <button className="text-primary hover:text-blue-700">
             <ChevronRight className="h-4 w-4" />
           </button>

@@ -76,6 +76,43 @@ app.get("/profile", authenticateJWT, async (req, res) => {
 app.post("/logout", (req, res) => {
     res.clearCookie("token").json({ message: "Logged out" });
 });
+app.get('/locations', async (req, res) => {
+  try {
+    const locations = await prisma.location.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    });
+    res.json(locations);
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    res.status(500).json({ error: 'Failed to fetch locations' });
+  }
+});
+app.get("/map/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const location = await prisma.location.findUnique({
+      where: { id: id },
+    });
+
+    if (!location) {
+      return res.status(404).json({ error: "Location not found" });
+    }
+
+    res.json(location);
+  } catch (error) {
+    console.error("Error fetching location:", error);
+    res.status(500).json({ error: "Failed to fetch location" });
+  }
+});
+app.get("/map", (req, res) => {
+  res.json({
+    defaultCenter: [28.6139, 77.2090], 
+    defaultZoom: 10,
+  });
+});
 const PORT = process.env.PORT ;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
