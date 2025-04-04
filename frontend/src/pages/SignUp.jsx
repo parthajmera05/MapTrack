@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { set } from "date-fns";
 
 const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -28,11 +29,11 @@ const signupSchema = z.object({
 });
 
 export function Signup() {
+  const [isAlert, setAlert] = useState(false);
   const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log(backendUrl)
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -54,7 +55,12 @@ export function Signup() {
       });
 
       if (!response.ok) {
-        throw new Error("Signup failed. Please try again.");
+        const errorData = await response.json();
+        if(errorData.message === "User already exists"){
+          window.alert(errorData.message);
+          setAlert(true);
+        }
+        throw new Error("Signup failed");
       }
 
       toast({
@@ -67,8 +73,10 @@ export function Signup() {
         navigate("/login");
       }, 300);
     } catch (error) {
-      console.error("Signup failed:", error);
-      window.alert("SignUp Failed");
+      if(!isAlert){
+        window.alert("Signup Failed. Try Again.");
+      }
+      
       toast({
         title: "Signup Failed",
         description: error.message,
