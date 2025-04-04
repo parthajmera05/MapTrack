@@ -44,6 +44,9 @@ export function Login() {
 
       const result = await response.json();
       if (!result.token) {
+        if(result.message === "User not found"){
+          window.alert(result.message);
+        }
         throw new Error("No token received from server");
       }
 
@@ -61,7 +64,7 @@ export function Login() {
       }, 300);
 
     } catch (error) {
-      window.alert("Login Succesfull")
+      window.alert("Login Failed.")
       toast({
         title: "Login Failed",
         description: error.message,
