@@ -10,9 +10,9 @@ export function DashBoard() {
   const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All Categories");
+
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+
 
   useEffect(() => {
     fetchLocations();
@@ -32,8 +32,8 @@ export function DashBoard() {
 
   const filteredLocations = locations?.filter(location => {
     const matchesSearch = location.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "All Categories" || location.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    
+    return matchesSearch ;
   });
 
   const handleLogout = async () => {
@@ -42,6 +42,7 @@ export function DashBoard() {
         method: 'POST',
         credentials: 'include',
       });
+      localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);   
