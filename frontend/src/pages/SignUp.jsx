@@ -32,7 +32,7 @@ export function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log(backendUrl);
+  console.log(backendUrl)
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
