@@ -31,7 +31,7 @@ export function Signup() {
   
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
+  const backendUrl = import.meta.env.BACKEND_URL;
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -43,7 +43,7 @@ export function Signup() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch(`${backendUrl}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

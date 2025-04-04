@@ -10,7 +10,7 @@ export function DashBoard() {
   const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -20,7 +20,7 @@ export function DashBoard() {
 
   const fetchLocations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/locations');
+      const response = await fetch(`${backendUrl}/locations`);
       const data = await response.json();
       setLocations(data);
     } catch (error) {
@@ -38,7 +38,7 @@ export function DashBoard() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5000/logout', {
+      await fetch(`${backendUrl}/logout`, {
         method: 'POST',
         credentials: 'include',
       });

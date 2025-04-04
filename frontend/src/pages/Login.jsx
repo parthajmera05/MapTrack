@@ -19,7 +19,7 @@ export function Login() {
   const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
+  const backendUrl = import.meta.env.BACKEND_URL;
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -31,7 +31,7 @@ export function Login() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch(`${backendUrl}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

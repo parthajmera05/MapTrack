@@ -13,6 +13,7 @@ export function Mapview() {
   const [mapConfig, setMapConfig] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const backendUrl = import.meta.env.BACKEND_URL;
   
   
   useEffect(() => {
@@ -21,8 +22,8 @@ export function Mapview() {
         setIsLoading(true);
         
         const [locationRes, mapRes] = await Promise.all([
-          fetch(`http://localhost:5000/map/${locationId}`),
-          fetch(`http://localhost:5000/map`),
+          fetch(`${backendUrl}/map/${locationId}`),
+          fetch(`${backendUrl}/map`),
         ]);
 
         if (!locationRes.ok) throw new Error("Failed to fetch location");
