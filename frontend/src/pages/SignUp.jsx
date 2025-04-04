@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useNavigate } from "react-router";
 import { useToast } from "../hooks/use-toast";
 import {
   Card,
@@ -28,10 +28,11 @@ const signupSchema = z.object({
 });
 
 export function Signup() {
-  
+  const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const backendUrl = import.meta.env.BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  console.log(backendUrl);
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -63,9 +64,11 @@ export function Signup() {
       });
 
       setTimeout(() => {
-        window.location.href = "/login";
+        navigate("/login");
       }, 300);
     } catch (error) {
+      console.error("Signup failed:", error);
+      window.alert("SignUp Failed");
       toast({
         title: "Signup Failed",
         description: error.message,

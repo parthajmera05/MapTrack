@@ -13,7 +13,7 @@ export function Mapview() {
   const [mapConfig, setMapConfig] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const backendUrl = import.meta.env.BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   
   
   useEffect(() => {

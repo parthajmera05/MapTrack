@@ -10,7 +10,7 @@ export function DashBoard() {
   const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const backendUrl = import.meta.env.BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(true);
 
 

@@ -19,7 +19,7 @@ export function Login() {
   const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const backendUrl = import.meta.env.BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -61,6 +61,7 @@ export function Login() {
       }, 300);
 
     } catch (error) {
+      window.alert("Login Succesfull")
       toast({
         title: "Login Failed",
         description: error.message,

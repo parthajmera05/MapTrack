@@ -9,7 +9,7 @@ export function Authenticated({ children }) {
   useEffect(() => {
     const checkAuth = () => {
       
-      const token = localStorage.getItem("token"); // ✅ Use localStorage instead of document.cookie
+      const token = localStorage.getItem("token"); 
       setAuthenticated(!!token);
       setLoading(false);
       
@@ -28,6 +28,7 @@ export function Authenticated({ children }) {
   }
 
   if (!authenticated) {
+    window.alert("You must be logged In");
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
