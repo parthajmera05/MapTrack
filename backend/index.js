@@ -8,16 +8,10 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173", "https://maptrack-production.up.railway.app/"];
+
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: true,
   credentials: true,
 }));
 
